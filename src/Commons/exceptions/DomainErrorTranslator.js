@@ -1,26 +1,17 @@
-//setelah direfactor
-const AddUserUseCase = require('../../../../Applications/use_case/AddUserUseCase');
+//after refactor
+const InvariantError = require('./InvariantError');
  
-class UsersHandler {
- constructor(container) {
-   this._container = container;
+const DomainErrorTranslator = {
+  translate(error) {
+    return DomainErrorTranslator._directories[error.message] || error;
+  },
+};
  
-   this.postUserHandler = this.postUserHandler.bind(this);
- }
+DomainErrorTranslator._directories = {
+  'REGISTER_USER.NOT_CONTAIN_NEEDED_PROPERTY': new InvariantError('tidak dapat membuat user baru karena properti yang dibutuhkan tidak ada'),
+  'REGISTER_USER.NOT_MEET_DATA_TYPE_SPECIFICATION': new InvariantError('tidak dapat membuat user baru karena tipe data tidak sesuai'),
+  'REGISTER_USER.USERNAME_LIMIT_CHAR': new InvariantError('tidak dapat membuat user baru karena karakter username melebihi batas limit'),
+  'REGISTER_USER.USERNAME_CONTAIN_RESTRICTED_CHARACTER': new InvariantError('tidak dapat membuat user baru karena username mengandung karakter terlarang'),
+};
  
- async postUserHandler(request, h) {
-   const addUserUseCase = this._container.getInstance(AddUserUseCase.name);
-   const addedUser = await addUserUseCase.execute(request.payload);
- 
-   const response = h.response({
-     status: 'success',
-     data: {
-       addedUser,
-     },
-   });
-   response.code(201);
-   return response;
- }
-}
- 
-module.exports = UsersHandler;
+module.exports = DomainErrorTranslator;
