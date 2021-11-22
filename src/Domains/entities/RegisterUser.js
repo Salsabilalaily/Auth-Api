@@ -11,11 +11,18 @@ class RegisterUser {
       if (username.length > 50) {
         throw new Error('REGISTER_USER.USERNAME_LIMIT_CHAR');
       }
-      
+
+      //refactor
+      if (!username.match(/^[\w]+$/)) {
+        throw new Error('REGISTER_USER.USERNAME_CONTAIN_RESTRICTED_CHARACTER');
+      }
+
+      //before refactor
+      /*
       if (!username.match(/^[a-zA-Z1-9_]+$/)) {
         throw new Error('REGISTER_USER.USERNAME_CONTAIN_RESTRICTED_CHARACTER');
       }
-     
+      */
    
       this.username = username;
       this.password = password;
